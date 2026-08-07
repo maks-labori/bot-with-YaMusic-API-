@@ -12,9 +12,11 @@ dp = Dispatcher()
 dp.include_router(router)
 
 async def main():
+    await init_base()
     bot = Bot(token=TOKEN)
+    await bot.delete_webhook(drop_pending_updates=True)
     print("Start")
     await dp.start_polling(bot)
 
-if __name__ == "main.py":
+if __name__ == "__main__":
     asyncio.run(main())
