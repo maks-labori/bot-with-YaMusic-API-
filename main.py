@@ -4,12 +4,21 @@ from os import getenv
 from dotenv import load_dotenv
 from processing_message.router import router
 from data_base.base import init_base
+from yandex_music import ClientAsync
 
 load_dotenv()
 TOKEN = getenv("BOT_TOKEN")
+KEY = getenv("YANDEX_TOKEN")
 
 dp = Dispatcher()
 dp.include_router(router)
+
+
+@dp.startup()
+async def start_client(dispatcher:Dispatcher):
+    client = await ClientAsync(KEY).init()
+    print(f"Привет,{client.me.account.first_name}")
+    dispatcher['yandex_client'] = client
 
 async def main():
     await init_base()
