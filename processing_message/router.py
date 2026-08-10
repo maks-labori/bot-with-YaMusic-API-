@@ -1,6 +1,6 @@
 from aiogram import Router,F
 from aiogram.filters import Command
-from aiogram.types import Message
+from aiogram.types import Message,BufferedInputFile
 from data_base.base import add_user
 import re
 from yandex_music import ClientAsync
@@ -26,9 +26,15 @@ async def processing(message:Message,yandex_client:ClientAsync):
         try:
             full_track = await yandex_client.tracks(yandex_id)
             if full_track:
-                await message.answer(f"Вы отправвили ссылку на трек - {full_track[0].title}")
-        except:
+                
+                track_bytes = await full_track[0].download_bytes_async(codec="mp3")
+                title = full_track[0].title
+                artist = ",".join(list(map(lambda c:c.name,full_track[0].artists)))
+                audio_file = BufferedInputFile(track_bytes,filename=f"{title}.mp3")
+                await message.answer_audio(audio=audio_file,title=title,performer=artist)
+        except Exception as e:
             await message.answer("сыллка битая или Яндекс лох")
+            print(e)
         return
     try:
         res = await yandex_client.search(text = str(message.text),type_="track")    

@@ -14,6 +14,7 @@ dp = Dispatcher()
 dp.include_router(router)
 
 
+
 @dp.startup()
 async def start_client(dispatcher:Dispatcher):
     client = await ClientAsync(KEY).init()
