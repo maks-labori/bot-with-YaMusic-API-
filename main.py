@@ -17,7 +17,7 @@ dp.include_router(router)
 
 @dp.startup()
 async def start_client(dispatcher:Dispatcher):
-    client = await ClientAsync(KEY).init()
+    client = await ClientAsync(token = KEY).init()
     print(f"Привет,{client.me.account.first_name}")
     dispatcher['yandex_client'] = client
 
