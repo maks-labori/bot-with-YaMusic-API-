@@ -92,9 +92,9 @@ async def processing(message:Message,yandex_client:ClientAsync):
             else:
                 track = await download_track(yandex_id,yandex_client)
                 if track:
-                    year = f"{track["year"]}г" if track["year"] else "" 
+                    year = f"{track['year']}г" if track['year'] else "" 
                     send_message = await message.answer_audio(audio=track["audio"],title=track["title"],performer=track["artist"],caption=year,reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Текст песни",callback_data=f"text:{yandex_id}"),InlineKeyboardButton(text="В избранное",callback_data=f"add:{yandex_id}")]]))
-                    await add_track(int(yandex_id),send_message.audio.file_id,track["title"],track["artist"],track["year"])
+                    await add_track(int(yandex_id),send_message.audio.file_id,track["title"],track["artist"],track['year'])
                 else:
                     await message.answer("трек не нашелся")
         except Exception as e:
@@ -151,9 +151,9 @@ async def download_inline(callback:CallbackQuery,yandex_client:ClientAsync):
         else:
             track = await download_track(yandex_id,yandex_client)
             if track:
-                year = f"{track["year"]}г" if track["year"] else ""
+                year = f"{track['year']}г" if track['year'] else ""
                 send_message = await callback.message.answer_audio(audio=track["audio"],title=track["title"],performer=track["artist"],caption=year,reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Текст песни",callback_data=f"text:{yandex_id}"),InlineKeyboardButton(text="В избранное",callback_data=f"add:{yandex_id}")]]))
-                await add_track(int(yandex_id),send_message.audio.file_id,track["title"],track["artist"],track["year"])
+                await add_track(int(yandex_id),send_message.audio.file_id,track["title"],track["artist"],track['year'])
             else:
                 await callback.message.answer("не нашелся трек")
     except Exception as e:
