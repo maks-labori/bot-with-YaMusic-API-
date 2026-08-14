@@ -1,5 +1,4 @@
 import aiosqlite
-
 DB_NAME = "data_base.sql"
 
 async def init_base():

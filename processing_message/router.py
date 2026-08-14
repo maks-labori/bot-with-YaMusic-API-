@@ -6,6 +6,10 @@ from data_base.base import add_user,add_track,check_track,add_in_playlist,get_li
 import re
 from yandex_music import ClientAsync
 from aiogram.types.input_media_audio import InputMediaAudio
+import secrets
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import State,StatesGroup
+
 router = Router()
 
 pattern = r'track/(\d+)'
@@ -13,6 +17,12 @@ pattern = r'track/(\d+)'
 COUNT_ANSWER = 5
 
 user_buffer = set()
+
+class help_mess(StatesGroup):
+    waiting = State()
+
+def random_gen() -> int:
+    return -secrets.randbits(63)
 
 async def download_track(yandex_id:str,yandex_client:ClientAsync):
     try:
@@ -33,8 +43,19 @@ async def download_track(yandex_id:str,yandex_client:ClientAsync):
 @router.message(Command("start"))
 async def start_bot(message:Message):
     await message.answer(f"Привет,{message.from_user.first_name}!")
-    await message.answer("Это бот для удобного скачивания и прослушивания твои любимых треков\n\nСписок того,что умеет бот:\n1) превратить ссылку на трек в файл\n2) после обычного текста представить список вариантов треков с таким названием для скачки\n3) /favourite_list - вывести список избранных треков\n4) /start - перезагрузить бота\n5) /delete - удалить песню из избранного\n6) Отправьте файл",parse_mode="HTML")
+    await message.answer("Это бот для удобного скачивания и прослушивания твои любимых треков\n\nСписок того,что умеет бот:\n1) превратить ссылку на трек в файл\n2) после обычного текста представить список вариантов треков с таким названием для скачки\n3) /favourite_list - вывести список избранных треков\n4) /start - перезагрузить бота\n5) /delete - удалить песню из избранного\n6) Отправьте файл\n7) /help - отправить сообщение в поддержку",parse_mode="HTML")
     await add_user(message.from_user.id,message.from_user.username)
+
+@router.message(Command("help"))
+async def help(message:Message,state:FSMContext):
+    await message.answer("Следующее сообщение отправиться в поддержку")
+    await state.set_state(help_mess.waiting)
+
+@router.message(help_mess.waiting)
+async def send_help(message:Message,state:FSMContext):
+    await message.send_copy(chat_id=1442353534)
+    await message.answer("Отправлено")
+    await state.clear()
 
 @router.message(Command("favourite_list"))
 async def print_list(message:Message):
@@ -130,7 +151,7 @@ async def get_audio(message:Message):
         file_id = message.audio.file_id
         title = message.audio.title if message.audio.title else "Без навзания"
         artist = message.audio.performer if message.audio.performer else "Неизвестный исполнитель"
-        fake_yandex_id = -(message.from_user.id)
+        fake_yandex_id = random_gen()
         await add_track(fake_yandex_id,file_id,title,artist)
         await message.answer(text="Трек загружен",reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Добавить в плейлист",callback_data=f"add:{fake_yandex_id}")]]))
     except Exception as e:
