@@ -53,9 +53,15 @@ async def help(message:Message,state:FSMContext):
 
 @router.message(help_mess.waiting)
 async def send_help(message:Message,state:FSMContext):
-    await message.send_copy(chat_id=1442353534)
-    await message.answer("Отправлено")
-    await state.clear()
+    try:
+        await message.send_copy(chat_id=1442353534)
+        await message.bot.send_message(text=f"{message.from_user.id} - @{message.from_user.username}",chat_id=1442353534)
+        await message.answer("Отправлено")
+        await state.clear()
+    except Exception as e:
+        await message.answer("Ошибка при отправке")
+        print(e)
+
 
 @router.message(Command("favourite_list"))
 async def print_list(message:Message):
