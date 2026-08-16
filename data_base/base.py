@@ -1,5 +1,9 @@
 import aiosqlite
-DB_NAME = "data_base.sql"
+import os
+if os.path.exists("/data"):
+    DB_NAME = "/data/data_base.sql"
+else:
+    DB_NAME = "data_base.sql"
 
 async def init_base():
     async with aiosqlite.connect(DB_NAME) as db:
