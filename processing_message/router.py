@@ -45,6 +45,7 @@ async def start_bot(message:Message):
     await message.answer(f"Привет,{message.from_user.first_name}!")
     await message.answer("Это бот для удобного скачивания и прослушивания твои любимых треков\n\nСписок того,что умеет бот:\n1) превратить ссылку на трек в файл\n2) после обычного текста представить список вариантов треков с таким названием для скачки\n3) /favourite_list - вывести список избранных треков\n4) /start - перезагрузить бота\n5) /delete - удалить песню из избранного\n6) Отправьте файл и можно будет добавить его в избранное\n7) /help - отправить сообщение в поддержку",parse_mode="HTML")
     await add_user(message.from_user.id,message.from_user.username)
+    await message.answer("Введите название песни для поиска")
 
 @router.message(Command("help"))
 async def help(message:Message,state:FSMContext):
